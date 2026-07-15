@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 
 type Chamado = {
@@ -13,15 +13,27 @@ type Chamado = {
 
 type Props = {
   chamado: Chamado;
-  onAtender: (id: string) => void;
+  onAtender: (id: string, professor: string) => void;
   onFinalizar: (id: string) => void;
+  professor: string;
 };
 
 export default function CardChamado({
   chamado,
   onAtender,
   onFinalizar,
+  professor,
 }: Props) {
+  const [novo, setNovo] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setNovo(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const tempo = useMemo(() => {
     if (!chamado.criadoEm) return "Agora";
 
@@ -47,17 +59,40 @@ export default function CardChamado({
     <div
       style={{
         background: "#1e293b",
-        borderRadius: "20px",
-        padding: "22px",
-        marginBottom: "18px",
+        borderRadius: 20,
+        padding: 22,
+        marginBottom: 18,
         borderLeft: `8px solid ${cor}`,
-        boxShadow: "0 8px 25px rgba(0,0,0,.25)",
+        boxShadow: novo
+          ? "0 0 25px rgba(200,16,46,.7)"
+          : "0 8px 25px rgba(0,0,0,.25)",
+        transform: novo
+          ? "translateY(-12px) scale(1.02)"
+          : "translateY(0) scale(1)",
+        transition: "all .45s ease",
       }}
     >
+      {novo && chamado.status === "aguardando" && (
+        <div
+          style={{
+            display: "inline-block",
+            marginBottom: 14,
+            padding: "6px 12px",
+            borderRadius: 999,
+            background: "#C8102E",
+            color: "#FFF",
+            fontSize: 13,
+            fontWeight: "bold",
+          }}
+        >
+          🔴 NOVO CHAMADO
+        </div>
+      )}
+
       <h2
         style={{
           margin: 0,
-          fontSize: "28px",
+          fontSize: 28,
           color: "#fff",
         }}
       >
@@ -67,8 +102,8 @@ export default function CardChamado({
       <p
         style={{
           color: "#cbd5e1",
-          marginTop: "10px",
-          marginBottom: "6px",
+          marginTop: 10,
+          marginBottom: 6,
         }}
       >
         🏋️ Aparelho {chamado.numero}
@@ -77,7 +112,7 @@ export default function CardChamado({
       <p
         style={{
           color: "#94a3b8",
-          marginBottom: "18px",
+          marginBottom: 18,
         }}
       >
         ⏱ {tempo}
@@ -87,11 +122,11 @@ export default function CardChamado({
         style={{
           display: "inline-block",
           padding: "8px 16px",
-          borderRadius: "999px",
+          borderRadius: 999,
           background: cor,
-          color: "#fff",
+          color: "#FFF",
           fontWeight: "bold",
-          marginBottom: "18px",
+          marginBottom: 18,
         }}
       >
         {chamado.status.toUpperCase()}
@@ -99,17 +134,18 @@ export default function CardChamado({
 
       {chamado.status === "aguardando" && (
         <button
-          onClick={() => onAtender(chamado.id)}
+          onClick={() => onAtender(chamado.id, professor)}
           style={{
             width: "100%",
-            padding: "15px",
+            padding: 15,
             border: "none",
-            borderRadius: "14px",
+            borderRadius: 14,
             background: "#f59e0b",
-            color: "#fff",
+            color: "#FFF",
             fontWeight: "bold",
-            fontSize: "18px",
+            fontSize: 18,
             cursor: "pointer",
+            transition: ".2s",
           }}
         >
           🚶 Iniciar Atendimento
@@ -121,13 +157,13 @@ export default function CardChamado({
           onClick={() => onFinalizar(chamado.id)}
           style={{
             width: "100%",
-            padding: "15px",
+            padding: 15,
             border: "none",
-            borderRadius: "14px",
+            borderRadius: 14,
             background: "#22c55e",
-            color: "#fff",
+            color: "#FFF",
             fontWeight: "bold",
-            fontSize: "18px",
+            fontSize: 18,
             cursor: "pointer",
           }}
         >
@@ -138,8 +174,8 @@ export default function CardChamado({
       {chamado.status === "finalizado" && (
         <div
           style={{
-            padding: "14px",
-            borderRadius: "14px",
+            padding: 14,
+            borderRadius: 14,
             background: "#14532d",
             color: "#bbf7d0",
             textAlign: "center",

@@ -2,21 +2,45 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { loginProfessor } from "../../services/professores";
 
 export default function LoginProfessor() {
   const router = useRouter();
 
-  const [usuario, setUsuario] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [senha, setSenha] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
-  function entrar() {
-    if (usuario === "professor" && senha === "123456") {
-      localStorage.setItem("gymcall-logado", "true");
-      router.push("/professor");
+  async function entrar() {
+    if (!telefone || !senha) {
+      alert("Preencha telefone e senha.");
       return;
     }
 
-    alert("Usuário ou senha inválidos.");
+    setCarregando(true);
+
+    try {
+      const professor = await loginProfessor(telefone, senha);
+
+      if (!professor) {
+        alert("Telefone ou senha inválidos.");
+        setCarregando(false);
+        return;
+      }
+
+      localStorage.setItem("gymcall-logado", "true");
+      localStorage.setItem(
+        "gymcall-professor",
+        JSON.stringify(professor)
+      );
+
+      router.push("/professor");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao realizar login.");
+    } finally {
+      setCarregando(false);
+    }
   }
 
   return (
@@ -61,9 +85,9 @@ export default function LoginProfessor() {
         </p>
 
         <input
-          placeholder="Usuário"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
+          placeholder="Telefone"
+          value={telefone}
+          onChange={(e) => setTelefone(e.target.value)}
           style={{
             width: "100%",
             padding: 15,
@@ -95,6 +119,7 @@ export default function LoginProfessor() {
 
         <button
           onClick={entrar}
+          disabled={carregando}
           style={{
             width: "100%",
             padding: 16,
@@ -105,9 +130,10 @@ export default function LoginProfessor() {
             fontSize: 18,
             fontWeight: "bold",
             cursor: "pointer",
+            opacity: carregando ? 0.7 : 1,
           }}
         >
-          ENTRAR
+          {carregando ? "Entrando..." : "ENTRAR"}
         </button>
       </div>
     </main>

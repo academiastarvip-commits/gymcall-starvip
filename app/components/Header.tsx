@@ -4,9 +4,13 @@ import Image from "next/image";
 
 type Props = {
   onSair: () => void;
+  nomeProfessor?: string;
 };
 
-export default function Header({ onSair }: Props) {
+export default function Header({
+  onSair,
+  nomeProfessor,
+}: Props) {
   return (
     <header
       style={{
@@ -62,21 +66,53 @@ export default function Header({ onSair }: Props) {
         </div>
       </div>
 
-      <button
-        onClick={onSair}
+      <div
         style={{
-          background: "#C8102E",
-          color: "#FFF",
-          border: "none",
-          borderRadius: "12px",
-          padding: "12px 20px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          fontSize: "16px",
+          display: "flex",
+          alignItems: "center",
+          gap: "18px",
         }}
       >
-        🚪 Sair
-      </button>
+        <div
+          style={{
+            textAlign: "right",
+          }}
+        >
+          <div
+            style={{
+              color: "#FFF",
+              fontWeight: "bold",
+            }}
+          >
+            {nomeProfessor || "Professor"}
+          </div>
+
+          <div
+            style={{
+              color: "#9CA3AF",
+              fontSize: 13,
+            }}
+          >
+            Online
+          </div>
+        </div>
+
+        <button
+          onClick={onSair}
+          style={{
+            background: "#C8102E",
+            color: "#FFF",
+            border: "none",
+            borderRadius: "12px",
+            padding: "12px 20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          🚪 Sair
+        </button>
+      </div>
     </header>
   );
 }

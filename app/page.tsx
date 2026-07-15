@@ -102,7 +102,33 @@ export default function Home() {
 
         <div
           style={{
-            marginTop: 40,
+            height: 1,
+            background: "#2d2d33",
+            margin: "28px 0",
+          }}
+        />
+
+        <button
+          onClick={() => router.push("/admin")}
+          style={{
+            width: "100%",
+            height: 55,
+            borderRadius: 16,
+            border: "1px solid #3F3F46",
+            background: "#27272A",
+            color: "#FFF",
+            fontSize: 17,
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "0.2s",
+          }}
+        >
+          ⚙️ PAINEL ADMINISTRATIVO
+        </button>
+
+        <div
+          style={{
+            marginTop: 35,
             textAlign: "center",
             color: "#777",
             fontSize: 14,

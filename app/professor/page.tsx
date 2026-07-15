@@ -19,6 +19,7 @@ import {
 import Dashboard from "../components/Dashboard";
 import CardChamado from "../components/CardChamado";
 import Header from "../components/Header";
+import Toast from "../components/Toast";
 
 type Chamado = {
   id: string;
@@ -32,8 +33,17 @@ export default function Professor() {
   const router = useRouter();
 
   const [chamados, setChamados] = useState<Chamado[]>([]);
+  type Professor = {
+  nome: string;
+};
+
+const [professor, setProfessor] = useState<Professor | null>(null);
+
+  const [toastVisivel, setToastVisivel] = useState(false);
+  const [toastMensagem, setToastMensagem] = useState("");
 
   const primeiraCarga = useRef(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   function sair() {
     localStorage.removeItem("gymcall-logado");
@@ -45,7 +55,17 @@ export default function Professor() {
 
     if (logado !== "true") {
       router.replace("/professor/login");
+      return;
     }
+
+    const dados = localStorage.getItem("gymcall-professor");
+
+    if (dados) {
+      setProfessor(JSON.parse(dados));
+    }
+
+    audioRef.current = new Audio("/sounds/notification.mp3");
+    audioRef.current.volume = 1;
   }, [router]);
 
   useEffect(() => {
@@ -62,13 +82,31 @@ export default function Professor() {
 
       if (primeiraCarga.current) {
         primeiraCarga.current = false;
+      } else if (lista.length > chamados.length) {
+        audioRef.current?.play().catch(() => {});
+
+        const novo = lista[0];
+
+        if (novo) {
+          setToastMensagem(
+            `${novo.nome} chamou no aparelho ${novo.numero}`
+          );
+
+          setToastVisivel(true);
+
+          document.title = "(1) GymCall";
+
+          setTimeout(() => {
+            document.title = "GymCall";
+          }, 4000);
+        }
       }
 
       setChamados(lista);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [chamados.length]);
 
   const aguardando = chamados.filter(
     (c) => c.status === "aguardando"
@@ -80,9 +118,7 @@ export default function Professor() {
 
   const finalizados = chamados.filter(
     (c) => c.status === "finalizado"
-  ).length;
-
-  return (
+  ).length;   return (
     <main
       style={{
         minHeight: "100vh",
@@ -92,13 +128,18 @@ export default function Professor() {
         fontFamily: "Arial",
       }}
     >
-      <Header onSair={sair} />
+      <Header
+        onSair={sair}
+        nomeProfessor={professor?.nome}
+      />
 
       <Dashboard
         aguardando={aguardando}
         atendendo={atendendo}
         finalizados={finalizados}
-      />      {chamados.length === 0 ? (
+      />
+
+      {chamados.length === 0 ? (
         <div
           style={{
             textAlign: "center",
@@ -114,11 +155,25 @@ export default function Professor() {
           <CardChamado
             key={item.id}
             chamado={item}
+            professor={professor?.nome || "Professor"}
             onAtender={atenderChamado}
             onFinalizar={finalizarChamado}
           />
         ))
       )}
+
+      <Toast
+        visivel={toastVisivel}
+        titulo="🔔 Novo chamado"
+        mensagem={toastMensagem}
+        onFechar={() => setToastVisivel(false)}
+      />
+
+      <audio
+        ref={audioRef}
+        src="/sounds/notification.mp3"
+        preload="auto"
+      />
     </main>
   );
 }
