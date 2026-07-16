@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
 import Botao from "./components/Botao";
 
 export default function Home() {
   const router = useRouter();
+
+  
 
   return (
     <main
@@ -120,7 +123,6 @@ export default function Home() {
             fontSize: 17,
             fontWeight: "bold",
             cursor: "pointer",
-            transition: "0.2s",
           }}
         >
           ⚙️ PAINEL ADMINISTRATIVO
