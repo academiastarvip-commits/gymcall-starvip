@@ -14,14 +14,21 @@ export default function OneSignalInit() {
 
         console.log("✅ OneSignal iniciado");
 
-        const permission =
-          await OneSignal.Notifications.permission;
+        console.log(
+          "Permissão:",
+          OneSignal.Notifications.permission
+        );
 
-        console.log("Permissão:", permission);
+        console.log(
+          "Opted In:",
+          OneSignal.User.PushSubscription.optedIn
+        );
 
-        if (!permission) {
-          await OneSignal.Notifications.requestPermission();
-        }
+        console.log(
+          "Subscription ID:",
+          OneSignal.User.PushSubscription.id
+        );
+
       } catch (error) {
         console.error(error);
       }
