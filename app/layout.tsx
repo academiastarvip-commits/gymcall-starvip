@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import RegisterServiceWorker from "./components/RegisterServiceWorker";
+import OneSignalInit from "./components/OneSignalInit";
 
 export const metadata: Metadata = {
   title: "GymCall",
@@ -46,6 +47,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         <RegisterServiceWorker />
+        <OneSignalInit />
         {children}
       </body>
     </html>
