@@ -13,8 +13,17 @@ export default function OneSignalInit() {
         });
 
         console.log("✅ OneSignal iniciado");
+
+        const permission =
+          await OneSignal.Notifications.permission;
+
+        console.log("Permissão:", permission);
+
+        if (!permission) {
+          await OneSignal.Notifications.requestPermission();
+        }
       } catch (error) {
-        console.error("Erro ao iniciar OneSignal:", error);
+        console.error(error);
       }
     }
 
